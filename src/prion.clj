@@ -1,8 +1,10 @@
+; A port of http://xcb.freedesktop.org/tutorial/
+; "Checking basic information about a connection"
+
 (ns prion
     (:gen-class)
     (:use [clj-native.core :only [defclib]])
-    (:import [java.nio ByteBuffer ByteOrder]
-             [com.sun.jna.ptr IntByReference]))
+    (:import [java.nio ByteBuffer ByteOrder]))
 
 (System/setProperty "jna.library.path" "/usr/lib/libxcb.so")
 
@@ -28,7 +30,7 @@
       :allowed_depths_len i8)
     (xcb_screen_iterator_t :data xcb_screen_t* :rem int :index int))
   (:functions
-    (xcb_connect [ constchar* void* ] void*)
+    (xcb_connect [ constchar* int* ] void*)
     (xcb_get_setup [ void* ] void*)
     (xcb_setup_roots_iterator [ void* ] xcb_screen_iterator_t)
     (xcb_screen_next [ xcb_screen_iterator_t* ] void )))
@@ -41,27 +43,15 @@
         (.asIntBuffer byte-buffer)))
 
 (defn -main [& args]
-      (let [screenNum (new IntByReference 7)
-            _ (println "screenNum value" (.getValue screenNum))
-            screenNum# (.getPointer screenNum)
-            _ (println "screenNum" screenNum#)
-            conn (xcb_connect nil screenNum#)
-            _ (println "conn" conn)
-            _ (println "screenNum value" (.getValue screenNum))
+      (let [scr-num (direct-int-buffer 1)
+            conn (xcb_connect nil scr-num)
             setup (xcb_get_setup conn)
-            _ (println "setup" setup)
             iter (xcb_setup_roots_iterator setup)
-            _ (println "iter" iter)
             screen (do
-                    (dotimes [_ (.getValue screenNum)]
+                    (dotimes [_ (.get scr-num)]
                         (xcb_screen_next iter))
-                    (println "final iter" iter)
-                    (println "final bean" (bean iter))
-                    (println "final :data" (.data iter))
-                    (println "done")
                     (.data iter))]
         (println)
-        (println "xcb_screen_t" screen)
         (println "Information of screen" (.root screen))
         (println "  width.........:" (.width_in_pixels screen))
         (println "  height........:" (.height_in_pixels screen))
