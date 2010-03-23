@@ -6,5 +6,5 @@
                  [org.clojure/clojure-contrib "1.0-SNAPSHOT"]
                  [net.java.dev.jna/jna "3.2.4"]
                  [clj-native/clj-native "0.6.0-SNAPSHOT"]]
-  :dev-dependencies []
+  :dev-dependencies [ [leiningen-run "0.2"] ]
   :main prion)
