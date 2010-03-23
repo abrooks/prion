@@ -1,0 +1,149 @@
+Components:
+
+    - all python core
+    - python-xlib
+    - Python idiomization layer on python-xlib (it's very C like)
+    - some plwm?
+
+Testing:
+
+    - functional
+        - click driven
+        - API driven
+    - robustness (random, long running)
+    - performance
+        - during functional/robustness tests
+        - during user run-time
+
+Critical usability goals:
+
+    - key bindings for terminal launch
+    - key bindings window movment
+    - frame splits
+    - command launch
+    - window close
+    - window force close
+
+Desirable usability goals:
+
+    - frame tabs
+    - saved layout
+    - query windows
+    - menus
+    - status bar
+    - compiz window dim/shade effect to show focused window
+      (optional for on screen entry, on switch, always)
+
+Other goals:
+
+    - window title search
+    - window title lists by contex (global, workspace, frame, type...)
+    - provide interactive prompt
+    - provide remote interactive prompt
+    - Xinerama / XRandR support
+    - screen blank/lock (DPMS)
+    - socket / fd events for external programs
+    - undo operations
+
+General notes:
+
+    - event driven -- should be silent during idle
+    - efficient -- neither CPU nor memory intense
+    - extensible -- all interfaces should be considered published API
+    - robust -- exceptions should always be caught, if needed, reset
+      to sane state -- this is a window manager, we're talking about.
+    - agnostic -- don't prefer any particular non-essential
+      technologies, work happily with all desktop environments
+    - *nix toolkit mentality
+    - many ways to go to something
+    - URGENT/raise status flagging (cycle, return)
+    - various features from Quicksilver
+      http://en.wikipedia.org/wiki/Quicksilver_(software)
+
+Random features:
+
+    - Tag a frame for next window -- a one-shot for slow starting programs
+
+Dreaming:
+
+    - multi-input support (multi user)
+    - DMX awareness
+    - network transparency?
+    - compositing for transient windows?
+
+Bootstrap plan:
+
+    ! port xcb demo
+    - port dwm to xcb+clojure
+
+        - display a rectangle
+        - map a window
+        - map / unmap a window
+        - move a window
+        - resize a window
+        - write text
+        - handle key events
+        - map / unmap multiple windows
+        - decorate multiple windows
+        - handle other X events
+
+
+======
+
+Why?
+
+    Defining window manager as "window manager" is too narrow a scope.
+    "workspace manager" or "event manager" or "presence manager" or
+    XXX manager is a better term.
+
+    I run xscreensaver just for a password lock and blanking events
+    (setting various parts of my presence for Gajim, etc.). My window
+    manager should do this.
+
+    Window / task accounting should be do easily done in the XXX
+    manager (without polling!).
+
+    I want interaction and awareness between GNU screen an the XXX
+    manager.
+
+    I want some meta-task oriented things too so that I can change
+    parts of my environement (window management down) for different
+    tasks / workflows.
+
+    I want to push my IM presence a bit farther so I can mark certain
+    windows / frames / workspaces as "don't bother me" or "I'm dorking
+    around, go ahead and interrupt me"
+
+    One of my issues with Ion is how much polling it does for the
+    status bar and that it doesn't leave good ways to push/pull
+    information out without polling.
+
+    I want environment aware clipboard management and password (and
+    password-via-clipboard) management.
+
+
+=====
+
+Design details:
+
+   Entities
+
+        Notices
+        Queries
+        Application
+        Application window
+        Statusbar
+            Template
+            Streams
+        Workspace
+            Frames
+                Tabs
+                Frame decoration
+                Frame region
+        Bindings
+            Cursor
+            Keyboard
+        Events
+            Input Events
+            Output Events
+            Handled Events
